@@ -95,12 +95,30 @@ jobs:
       - name: golangci-lint
         run: docker run --rm --pids-limit=4096 "$IMAGE" golangci-lint run ./...
 
+  # Live OpenID AuthZEN Todo scenario — interop/ package tests under the `interop` build tag.
+  # Without the tag the package's sanity tests already run inside the `test` job; this job
+  # adds the network-dependent PEP-role tests against <https://todo.authzen-interop.net>.
+  # Not yet a required check on branch protection — the gate flips after a green run here
+  # confirms the runner has outbound HTTPS to the live PDP.
+  interop:
+    needs: build
+    runs-on: fj-bellows
+    steps:
+      - name: Login to Forgejo container registry
+        run: echo "${{ secrets.CONTAINER_REGISTRY_TOKEN }}" | docker login git.stern.ca -u henry --password-stdin
+      - name: Pull the common CI image
+        run: |
+          docker pull "$REGISTRY_IMAGE"
+          docker tag "$REGISTRY_IMAGE" "$IMAGE"
+      - name: go test -tags interop -race -shuffle=on
+        run: docker run --rm --pids-limit=4096 "$IMAGE" sh scripts/check-interop.sh
+
   # Clean up after this run's CI image — both the worker's local cache AND the Forgejo container
   # registry copy. Each PR/run produces a fresh per-SHA tag; without cleanup they pile up.
   # `always()` so cleanup runs even when a check failed; `|| true` so cleanup never fails the
   # workflow itself. If `build` failed before push, the DELETE 404s and is swallowed.
   cleanup:
-    needs: [static, test, lint]
+    needs: [static, test, lint, interop]
     if: always()
     runs-on: fj-bellows
     steps:
