@@ -76,3 +76,86 @@ type ActionSearchResponse struct {
 	Context json.RawMessage `json:"context,omitempty"`
 	Results []Action        `json:"results"`
 }
+
+// Validate reports whether r is a well-formed Subject Search request
+// per spec §6.3.1: Subject.Type is REQUIRED (Subject.ID is omitted
+// or ignored); Action.Name is REQUIRED; Resource.Type AND Resource.ID
+// are both REQUIRED (a Subject Search asks "of all subjects of this
+// type, which can do this action on this specific resource?").
+//
+// Returns a [*ValidationError] for the first problem found, or nil
+// if r is valid.
+func (r *SubjectSearchRequest) Validate() error {
+	if r == nil {
+		return &ValidationError{Reason: "nil SubjectSearchRequest"}
+	}
+	if r.Subject.Type == "" {
+		return &ValidationError{Field: "subject.type", Reason: "required"}
+	}
+	if r.Action.Name == "" {
+		return &ValidationError{Field: "action.name", Reason: "required"}
+	}
+	if r.Resource.Type == "" {
+		return &ValidationError{Field: "resource.type", Reason: "required"}
+	}
+	if r.Resource.ID == "" {
+		return &ValidationError{Field: "resource.id", Reason: "required"}
+	}
+	return nil
+}
+
+// Validate reports whether r is a well-formed Resource Search request
+// per spec §6.3.2: Subject.Type AND Subject.ID are REQUIRED (the
+// search is anchored to a specific subject); Action.Name is REQUIRED;
+// Resource.Type is REQUIRED (Resource.ID is omitted or ignored — the
+// search asks "of all resources of this type, which can this subject
+// do this action on?").
+//
+// Returns a [*ValidationError] for the first problem found, or nil
+// if r is valid.
+func (r *ResourceSearchRequest) Validate() error {
+	if r == nil {
+		return &ValidationError{Reason: "nil ResourceSearchRequest"}
+	}
+	if r.Subject.Type == "" {
+		return &ValidationError{Field: "subject.type", Reason: "required"}
+	}
+	if r.Subject.ID == "" {
+		return &ValidationError{Field: "subject.id", Reason: "required"}
+	}
+	if r.Action.Name == "" {
+		return &ValidationError{Field: "action.name", Reason: "required"}
+	}
+	if r.Resource.Type == "" {
+		return &ValidationError{Field: "resource.type", Reason: "required"}
+	}
+	return nil
+}
+
+// Validate reports whether r is a well-formed Action Search request
+// per spec §6.3.3: Subject.Type AND Subject.ID are REQUIRED;
+// Resource.Type AND Resource.ID are REQUIRED. The request body
+// contains no action field at all — the spec defines that on the
+// endpoint side, and the type omits the Action field accordingly
+// (see ActionSearchRequest's godoc).
+//
+// Returns a [*ValidationError] for the first problem found, or nil
+// if r is valid.
+func (r *ActionSearchRequest) Validate() error {
+	if r == nil {
+		return &ValidationError{Reason: "nil ActionSearchRequest"}
+	}
+	if r.Subject.Type == "" {
+		return &ValidationError{Field: "subject.type", Reason: "required"}
+	}
+	if r.Subject.ID == "" {
+		return &ValidationError{Field: "subject.id", Reason: "required"}
+	}
+	if r.Resource.Type == "" {
+		return &ValidationError{Field: "resource.type", Reason: "required"}
+	}
+	if r.Resource.ID == "" {
+		return &ValidationError{Field: "resource.id", Reason: "required"}
+	}
+	return nil
+}
