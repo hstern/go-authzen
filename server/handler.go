@@ -40,9 +40,6 @@ import (
 // The returned handler is safe for concurrent use.
 func NewHandler(d Decider, opts ...HandlerOption) http.Handler {
 	h := &handler{decider: d}
-	for _, opt := range opts {
-		opt(h)
-	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST "+authzen.EvaluationEndpoint, h.handleEvaluate)
 	mux.HandleFunc("POST "+authzen.EvaluationsEndpoint, h.handleEvaluations)
@@ -50,22 +47,32 @@ func NewHandler(d Decider, opts ...HandlerOption) http.Handler {
 	mux.HandleFunc("POST "+authzen.SearchResourceEndpoint, h.handleSearchResource)
 	mux.HandleFunc("POST "+authzen.SearchActionEndpoint, h.handleSearchAction)
 	h.mux = mux
+	h.chain = mux
+	for _, opt := range opts {
+		opt(h)
+	}
 	return h
 }
 
 // HandlerOption configures the [http.Handler] returned by
-// [NewHandler]. Middleware (structured logging, metrics, X-Request-ID
-// echo) land in AUTHZEN-20 as constructors that return values of
-// this type.
+// [NewHandler]. Middleware-style options wrap the handler's request
+// chain (logging, metrics, X-Request-ID echo) — they may compose by
+// wrapping each other in option-order. The middleware options
+// themselves land in subsequent steps; the type is exported here so
+// [NewHandler]'s signature stays stable.
 type HandlerOption func(*handler)
 
 type handler struct {
 	decider Decider
 	mux     *http.ServeMux
+	// chain is the request-dispatch chain — mux at the bottom,
+	// possibly wrapped by middleware HandlerOptions. ServeHTTP
+	// dispatches to it.
+	chain http.Handler
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.mux.ServeHTTP(w, r)
+	h.chain.ServeHTTP(w, r)
 }
 
 func (h *handler) handleEvaluate(w http.ResponseWriter, r *http.Request) {
