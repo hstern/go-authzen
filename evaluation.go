@@ -3,7 +3,10 @@
 
 package authzen
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // EvaluationRequest is the body of a single Access Evaluation request
 // (spec §6.1.1). Subject, Action, and Resource are REQUIRED — the
@@ -108,3 +111,82 @@ const (
 	// that item.
 	EvaluationsSemanticPermitOnFirstPermit EvaluationsSemantic = "permit_on_first_permit"
 )
+
+// Validate reports whether r is a well-formed Evaluation request per
+// spec §6.1.1 — Subject.Type, Action.Name, and Resource.Type are all
+// REQUIRED. The library's strict-on-encode posture (DESIGN.md §5) means
+// the client calls Validate before marshaling and refuses to send an
+// invalid request; consumers building a request by hand can call it
+// directly to surface the same errors at their preferred point in the
+// flow.
+//
+// Returns a [*ValidationError] with the dotted-path Field of the first
+// problem found, or nil if r is valid. Returns a *ValidationError with
+// Reason "nil EvaluationRequest" if r is nil.
+func (r *EvaluationRequest) Validate() error {
+	if r == nil {
+		return &ValidationError{Reason: "nil EvaluationRequest"}
+	}
+	if r.Subject.Type == "" {
+		return &ValidationError{Field: "subject.type", Reason: "required"}
+	}
+	if r.Action.Name == "" {
+		return &ValidationError{Field: "action.name", Reason: "required"}
+	}
+	if r.Resource.Type == "" {
+		return &ValidationError{Field: "resource.type", Reason: "required"}
+	}
+	return nil
+}
+
+// Validate reports whether r is a well-formed Evaluations (batch)
+// request per spec §6.2.1. The batch shape allows an item to omit a
+// field if the top-level default supplies it, so validation walks each
+// item and checks the EFFECTIVE Subject / Action / Resource — top-
+// level used only when the item omits its own value.
+//
+// Returns a [*ValidationError] for the first item that fails, or nil
+// if every effective item is well-formed. An empty Evaluations array
+// is itself an error (Field "evaluations", Reason "required, at least
+// one item") — the spec requires the field be present and non-empty.
+func (r *EvaluationsRequest) Validate() error {
+	if r == nil {
+		return &ValidationError{Reason: "nil EvaluationsRequest"}
+	}
+	if len(r.Evaluations) == 0 {
+		return &ValidationError{Field: "evaluations", Reason: "required, at least one item"}
+	}
+	for i, item := range r.Evaluations {
+		subj := item.Subject
+		if subj == nil {
+			subj = r.Subject
+		}
+		if subj == nil || subj.Type == "" {
+			return &ValidationError{
+				Field:  fmt.Sprintf("evaluations[%d].subject.type", i),
+				Reason: "required (item or top-level default)",
+			}
+		}
+		act := item.Action
+		if act == nil {
+			act = r.Action
+		}
+		if act == nil || act.Name == "" {
+			return &ValidationError{
+				Field:  fmt.Sprintf("evaluations[%d].action.name", i),
+				Reason: "required (item or top-level default)",
+			}
+		}
+		rsc := item.Resource
+		if rsc == nil {
+			rsc = r.Resource
+		}
+		if rsc == nil || rsc.Type == "" {
+			return &ValidationError{
+				Field:  fmt.Sprintf("evaluations[%d].resource.type", i),
+				Reason: "required (item or top-level default)",
+			}
+		}
+	}
+	return nil
+}
