@@ -1,0 +1,56 @@
+# Vulnerability scan → tracked issues, reconciled against MAIN (scripts/vuln-issues.sh): opens
+# one deduped Forgejo issue per affecting vuln, and auto-closes any whose vuln is no longer
+# detected (fixed). NON-BLOCKING: a finding never fails the job (the issue is the signal); the
+# job fails only if the scan itself errors.
+#
+# Runs ONLY on main, never on pull_request — a vuln on a branch isn't in main yet, and the
+# issue set is meant to mirror main's actual state (which is also what lets the same scan
+# auto-close issues once a fix lands). The daily `schedule` catches CVEs freshly published into
+# the live govulncheck DB even with no code change (the realistic case — the DB moves, the code
+# doesn't). `push` to main catches a vuln a merge introduces or fixes; dispatch is for ad-hoc
+# runs (report-only off main).
+#
+# Source mode: go-authzen is a library — no shipping binary — so govulncheck walks the import
+# graph under ./... and reports reachable vulnerabilities in deps.
+name: vuln
+on:
+  schedule:
+    - cron: "41 6 * * *"   # daily, 06:41 UTC (offset from ascend-proto's 06:23)
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  IMAGE: go-authzen-ci:${{ github.sha }}
+
+jobs:
+  scan:
+    runs-on: fj-bellows
+    steps:
+      - uses: actions/checkout@v4
+      # Build the common `ci` image locally (no registry push here — this workflow doesn't fan
+      # out across jobs, and we don't want to pollute the registry with non-PR scratch tags).
+      # The image carries govulncheck + the source tree at the scanned SHA.
+      - name: Build the common CI image
+        run: docker build --load --target ci -t "$IMAGE" .
+      # govulncheck (source mode) → open/dedupe issues. FORGEJO_TOKEN needs issue:write;
+      # GITHUB_REPOSITORY + GITHUB_API_URL + GITHUB_REF_NAME + GITHUB_EVENT_NAME come from the
+      # runner env. --network is on by default (govulncheck fetches the live vuln DB). The
+      # script exits 0 on findings (non-blocking) — it only errors if the scan itself fails.
+      - name: govulncheck → issues
+        run: |
+          docker run --rm --pids-limit=4096 \
+            -e FORGEJO_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
+            -e GITHUB_REPOSITORY \
+            -e GITHUB_API_URL \
+            -e GITHUB_REF_NAME \
+            -e GITHUB_EVENT_NAME \
+            "$IMAGE" sh scripts/vuln-issues.sh
+      # Drop this run's image so per-SHA tags don't fill the runner's disk (see ci.yml).
+      - name: Drop this run's CI image
+        if: always()
+        run: docker rmi -f "$IMAGE" 2>/dev/null || true
