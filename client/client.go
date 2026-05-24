@@ -22,6 +22,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sync"
+	"time"
+
+	"github.com/hstern/go-authzen/v1"
 )
 
 // HTTPDoer is the interface the client requires of its underlying
@@ -38,11 +42,28 @@ type HTTPDoer interface {
 // The zero value is not usable; use the constructor.
 //
 // A Client is safe for concurrent use by multiple goroutines — every
-// per-endpoint method builds its own request, so there is no shared
-// mutable state after construction.
+// per-endpoint method builds its own request, and the metadata cache
+// is mutex-guarded.
 type Client struct {
 	baseURL *url.URL
 	doer    HTTPDoer
+
+	// Metadata-document cache state (used by FetchMetadata in
+	// client/metadata.go). The cache survives across calls to
+	// FetchMetadata but is per-Client — a new Client starts cold.
+	metaMu           sync.Mutex
+	metaCache        *cachedMetadata
+	metaDefaultTTL   time.Duration // fallback when response has no Cache-Control max-age
+	metaRelaxedMixUp bool          // when true, mix-up validation is opt-out
+}
+
+// cachedMetadata is the per-Client metadata document cache entry —
+// the parsed document plus its expiry. FetchMetadata returns the
+// pointer to the same underlying document on a cache hit, so
+// callers MUST NOT mutate the returned [authzen.Metadata].
+type cachedMetadata struct {
+	doc     *authzen.Metadata
+	expires time.Time
 }
 
 // Option customizes a [Client] at construction. Pass options to
@@ -66,8 +87,9 @@ func NewClient(baseURL string, opts ...Option) (*Client, error) {
 		return nil, errors.New("authzen client: baseURL must be an absolute URL with scheme and host")
 	}
 	c := &Client{
-		baseURL: u,
-		doer:    http.DefaultClient,
+		baseURL:        u,
+		doer:           http.DefaultClient,
+		metaDefaultTTL: time.Hour, // spec is silent on cache lifetime; 1h is the design default
 	}
 	for _, opt := range opts {
 		opt(c)
