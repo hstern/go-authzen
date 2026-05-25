@@ -2,18 +2,29 @@
 
 This package exposes the OpenID AuthZEN Todo interoperability scenario
 as Go-native fixtures. The scenario is the live conformance harness the
-WG maintains at <https://todo.authzen-interop.net>; sources at
-<https://github.com/openid/authzen/tree/main/interop>.
+WG maintains; the Todo application's user-facing PEP is at
+<https://todo.authzen-interop.net>, the participating PDPs are listed
+in `authzen-todo-backend/src/pdps.json`, and the sources for everything
+live at <https://github.com/openid/authzen/tree/main/interop>.
 
 Tests in this repository iterate the fixtures in two roles:
 
 - **PEP role** — the library's client makes requests against the live
-  public PDP at `interop.PublicPDPBaseURL` and asserts the decisions
-  match the table.
+  public PDP at `interop.PublicPDPBaseURL` (Topaz, the Aserto
+  reference implementation the scenario was originally written
+  against) and asserts the decisions match the table.
 - **PDP role** — `httptest.NewServer(server.NewHandler(d))` is stood
   up with an in-memory `Decider` that wraps `interop.Decide`; the
   library's client drives it with the same scenario inputs and the
   same decisions are asserted.
+
+`PublicPDPBaseURL` deliberately picks one PDP from the registry — the
+constant is a default test target, not an enumeration. Roughly
+seventeen vendors run conformant PDPs (Topaz, Cerbos, Open Policy
+Agent, Permit.io, SGNL, PingAuthorize, …) and any of them can stand in
+for the live target; consumers wanting to exercise an alternate vendor
+can pass its URL straight to `client.NewClient`. Switching the default
+is intentionally cheap — change one constant.
 
 Network-dependent tests carry the `interop` build tag and are skipped
 by default. Build them with:
@@ -31,7 +42,7 @@ and every (user × action) pair is covered.
 
 | Constant / function                  | Source                                                           |
 | ------------------------------------ | ---------------------------------------------------------------- |
-| `PublicPDPBaseURL`                   | the live scenario PDP endpoint                                   |
+| `PublicPDPBaseURL`                   | Topaz's interop URL — one PDP among ~17 in `pdps.json`           |
 | `SubjectType` = `"user"`             | `authzen-todo-backend/src/auth.ts` builds `{type:"user", id:sub}`|
 | `ResourceTypeUser`, `ResourceTypeTodo`| same                                                            |
 | `ActionRead{User,Todos}`, `Action{Create,Update,Delete}Todo` | same             |
@@ -75,7 +86,12 @@ upstream changes, refresh the fixtures here in order:
    ```
    If the live PDP disagrees with `Decide` on any case, the live PDP
    wins: update `Decide` and the rules documentation to match, then
-   re-run the sanity tests until both layers agree again.
+   re-run the sanity tests until both layers agree again. The default
+   target is Topaz (`PublicPDPBaseURL`); to validate against a
+   different vendor's PDP, copy its URL from
+   `authzen-todo-backend/src/pdps.json` and pass it directly to
+   `client.NewClient` in a one-off script — the constant doesn't need
+   to change to test against an alternative endpoint.
 6. **Note the refresh in `CHANGELOG.md`** under the next version's
    unreleased entry.
 
