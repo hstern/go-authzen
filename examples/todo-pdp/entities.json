@@ -1,0 +1,47 @@
+[
+  { "uid": { "type": "Role", "id": "admin" },        "attrs": {}, "parents": [] },
+  { "uid": { "type": "Role", "id": "editor" },       "attrs": {}, "parents": [] },
+  { "uid": { "type": "Role", "id": "viewer" },       "attrs": {}, "parents": [] },
+  { "uid": { "type": "Role", "id": "evil_genius" },  "attrs": {}, "parents": [] },
+
+  { "uid": { "type": "User", "id": "rick@the-citadel.com" },
+    "attrs": {},
+    "parents": [
+      { "type": "Role", "id": "admin" },
+      { "type": "Role", "id": "evil_genius" }
+    ]
+  },
+  { "uid": { "type": "User", "id": "morty@the-citadel.com" },
+    "attrs": {},
+    "parents": [{ "type": "Role", "id": "editor" }]
+  },
+  { "uid": { "type": "User", "id": "summer@the-smiths.com" },
+    "attrs": {},
+    "parents": [{ "type": "Role", "id": "editor" }]
+  },
+  { "uid": { "type": "User", "id": "beth@the-smiths.com" },
+    "attrs": {},
+    "parents": [{ "type": "Role", "id": "viewer" }]
+  },
+  { "uid": { "type": "User", "id": "jerry@the-smiths.com" },
+    "attrs": {},
+    "parents": [{ "type": "Role", "id": "viewer" }]
+  },
+
+  { "uid": { "type": "Todo", "id": "todo-1" },
+    "attrs": { "ownerID": { "__entity": { "type": "User", "id": "morty@the-citadel.com" } } },
+    "parents": []
+  },
+  { "uid": { "type": "Todo", "id": "todo-2" },
+    "attrs": { "ownerID": { "__entity": { "type": "User", "id": "summer@the-smiths.com" } } },
+    "parents": []
+  },
+  { "uid": { "type": "Todo", "id": "todo-3" },
+    "attrs": { "ownerID": { "__entity": { "type": "User", "id": "rick@the-citadel.com" } } },
+    "parents": []
+  },
+  { "uid": { "type": "Todo", "id": "todo-4" },
+    "attrs": { "ownerID": { "__entity": { "type": "User", "id": "morty@the-citadel.com" } } },
+    "parents": []
+  }
+]
