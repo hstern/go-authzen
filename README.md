@@ -44,8 +44,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
 )
 
 func main() {
@@ -78,8 +78,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/server"
 )
 
 type myPDP struct{ server.NotImplementedDecider }

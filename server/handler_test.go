@@ -13,9 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
+	"github.com/hstern/go-authzen/server"
 )
 
 // staticDecider is the test PDP — programmable per test via the

@@ -6,7 +6,7 @@ package client
 import (
 	"context"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // SearchSubject calls the PDP's Subject Search endpoint (spec §6.3.1)

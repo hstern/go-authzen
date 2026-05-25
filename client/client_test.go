@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1/client"
+	"github.com/hstern/go-authzen/client"
 )
 
 func TestNewClient_OK(t *testing.T) {

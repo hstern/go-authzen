@@ -23,7 +23,7 @@ package server
 import (
 	"context"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // Decider is the contract a PDP implements: one method per AuthZEN

@@ -1,3 +1,3 @@
-module github.com/hstern/go-authzen/v1
+module github.com/hstern/go-authzen
 
 go 1.26

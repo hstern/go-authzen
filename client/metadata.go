@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // FetchMetadata fetches the PDP's configuration document from

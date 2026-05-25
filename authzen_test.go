@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 func TestSpecVersion(t *testing.T) {

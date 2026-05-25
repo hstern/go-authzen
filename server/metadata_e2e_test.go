@@ -10,9 +10,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
+	"github.com/hstern/go-authzen/server"
 )
 
 // TestE2E_PartialDecider_MetadataAdvertisesOnlyImplemented is the

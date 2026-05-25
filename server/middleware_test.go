@@ -13,9 +13,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
+	"github.com/hstern/go-authzen/server"
 )
 
 func TestMiddleware_WithLogger_FiresOncePerRequest(t *testing.T) {
