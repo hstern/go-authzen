@@ -12,8 +12,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/server"
 )
 
 // allowAllDecider permits every Evaluate call and inherits the

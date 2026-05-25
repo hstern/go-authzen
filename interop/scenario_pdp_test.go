@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
-	"github.com/hstern/go-authzen/v1/interop"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
+	"github.com/hstern/go-authzen/interop"
+	"github.com/hstern/go-authzen/server"
 )
 
 // pdpTestTimeout caps each PDP-role test. The httptest server runs

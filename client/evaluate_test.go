@@ -13,8 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
 )
 
 // validEvalRequest returns a well-formed EvaluationRequest used by

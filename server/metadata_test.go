@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/server"
 )
 
 func TestBuildMetadata_FullDecider_AdvertisesEveryEndpoint(t *testing.T) {

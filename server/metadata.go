@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // MetadataOption customizes the [authzen.Metadata] document produced

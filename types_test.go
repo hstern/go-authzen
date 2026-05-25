@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // roundTrip marshals v, then unmarshals into a freshly zeroed copy of v

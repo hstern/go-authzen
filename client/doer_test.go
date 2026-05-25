@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
 )
 
 func TestWithBearerToken_AddsHeader(t *testing.T) {

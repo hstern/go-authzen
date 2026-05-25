@@ -6,8 +6,8 @@ package interop
 import (
 	"context"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/server"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/server"
 )
 
 // NewDecider returns a [server.Decider] that answers Evaluate and

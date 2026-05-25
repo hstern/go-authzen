@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // NewHandler returns an [http.Handler] that adapts d to the AuthZEN

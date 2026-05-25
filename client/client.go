@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // HTTPDoer is the interface the client requires of its underlying

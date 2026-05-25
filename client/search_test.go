@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hstern/go-authzen/v1"
-	"github.com/hstern/go-authzen/v1/client"
+	"github.com/hstern/go-authzen"
+	"github.com/hstern/go-authzen/client"
 )
 
 func TestSearchSubject_Roundtrip(t *testing.T) {

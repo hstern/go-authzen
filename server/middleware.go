@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hstern/go-authzen/v1"
+	"github.com/hstern/go-authzen"
 )
 
 // LogEvent carries the data a logging hook receives once per

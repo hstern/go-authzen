@@ -19,7 +19,7 @@ import "encoding/json"
 // PolicyDecisionPoint MUST equal the URL at which the metadata
 // document was fetched — a PEP that sees a mismatch MUST reject
 // the document (spec §9.1.1 — mix-up attack defense). The client's
-// [github.com/hstern/go-authzen/v1/client.Client.FetchMetadata]
+// [github.com/hstern/go-authzen/client.Client.FetchMetadata]
 // enforces this by default.
 //
 // signed_metadata (spec §9.1, RFC 7515 JWS) is exposed as

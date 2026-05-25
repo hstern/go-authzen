@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hstern/go-authzen/v1/client"
-	"github.com/hstern/go-authzen/v1/interop"
+	"github.com/hstern/go-authzen/client"
+	"github.com/hstern/go-authzen/interop"
 )
 
 // TestPEPRoleScenarioEvaluate exercises the PEP role against the live
