@@ -22,13 +22,16 @@ adapter. Those belong in downstream consumers.
 
 ## Status
 
-**Pre-release.** Active development toward `v0.1.0`. The wire types,
-client, server, metadata machinery, and interop fixtures are all
-implemented; once the AuthZEN Todo interop scenario passes in both
-PEP and PDP roles in CI, the first tag ships.
+`v0.1.0` is the first tagged release. The library tracks
+**AuthZEN 1.0 Final** (published 2026-01-11), exposed as
+`authzen.SpecVersion`. The full wire surface (single evaluation,
+batch evaluations, the three search variants), the metadata document,
+and an interop fixture set covering both PEP and PDP roles ship in
+this release. See [`CHANGELOG.md`](CHANGELOG.md) for what landed.
 
-The library tracks **AuthZEN 1.0 Final** (published 2026-01-11). The
-spec version is exposed as `authzen.SpecVersion`.
+The path to `v1.0.0` is open external integration and continued
+interop confidence; see the **Stability** section for what changes
+between minor versions and what does not.
 
 ## Quickstart
 
@@ -136,6 +139,40 @@ if err := authzen.DecodeJSON(resp.Context, &advice); err != nil {
 `DecodeJSON` treats an absent or empty `RawMessage` as "no extension
 present" (no error, `v` left untouched), so you do not need to guard
 against nil yourself.
+
+## Metadata document
+
+The library implements `/.well-known/authzen-configuration` (spec §9)
+on both sides of the wire:
+
+- **Server**: `server.BuildMetadata(pdpURL, decider, opts...)`
+  introspects the `Decider` by probing each method with a sentinel
+  request and publishes only the endpoints the PDP actually
+  implements. Serve the result with `server.NewMetadataHandler` at
+  `authzen.MetadataPath`.
+- **Mix-up protection (client default)**: `Client.FetchMetadata` fails
+  hard with a typed `*client.MixUpError` when the response's
+  `policy_decision_point` does not match the base URL the client was
+  configured with — the spec §9.1.1 defense against a swapped
+  metadata document, an authorization-bypass-class vulnerability.
+  Opt out with `client.WithRelaxedMetadataValidation()` only when the
+  configured URL is known to differ from the published one (a TLS
+  terminator or load balancer in front of the PDP, say).
+- **Capabilities as opaque strings**: `Metadata.Capabilities` is
+  `[]string`. The library never branches on specific URN values; the
+  IANA `urn:ietf:params:authzen:*` registry has no entries yet, and
+  clients should treat any URN they don't recognize as
+  forward-compatible data rather than an error.
+- **Caching**: `Client.FetchMetadata` honors the response's
+  `Cache-Control: max-age=N`; absent that, it falls back to a
+  configurable default (one hour). Override with
+  `client.WithMetadataTTL(d)`. The cache lives on the `Client`, not
+  globally — different clients can hold different documents.
+- **Signed metadata** (`signed_metadata`, a JWS per RFC 7515) is
+  round-tripped as opaque bytes in `v0.x` so existing data survives
+  upgrades without churn. Verification and production move into
+  `v0.2.0` along with a JOSE dependency; see the **Stability**
+  section.
 
 ## Why this library
 
