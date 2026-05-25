@@ -5,10 +5,28 @@ package interop
 
 import "encoding/json"
 
-// PublicPDPBaseURL is the live Todo PDP the OpenID AuthZEN WG exposes
-// for conformance testing. Tests with the `interop` build tag exercise
-// this endpoint.
-const PublicPDPBaseURL = "https://todo.authzen-interop.net"
+// PublicPDPBaseURL is the live PDP this package's `interop`-tagged
+// tests reach over the network. It points at Topaz, the Aserto
+// reference Policy Decision Point the WG runs at
+// https://topaz-todo-proxy.authzen-interop.net — the prototype the
+// Todo scenario was originally written against.
+//
+// Topaz is one of roughly seventeen participating PDPs listed in the
+// scenario's registry (authzen-todo-backend/src/pdps.json). Other
+// candidates include Cerbos, Open Policy Agent, Permit.io, SGNL, and
+// the IDP-backed providers; their endpoints come and go between
+// interop runs. Topaz is the most stable choice for an automated
+// gate because the upstream PEP is built and tested against it.
+//
+// The Todo application's user-facing URL (https://todo.authzen-
+// interop.net) is the PEP / frontend — not a PDP — and returns
+// HTTP 404 for the AuthZEN evaluation path. Do not point this
+// constant there.
+//
+// Topaz does not currently serve a /.well-known/authzen-configuration
+// document, so this package's tests exercise the evaluation paths
+// directly rather than discovering them via metadata.
+const PublicPDPBaseURL = "https://topaz-todo-proxy.authzen-interop.net"
 
 // SubjectType is the AuthZEN subject type the Todo scenario uses for
 // every authenticated user.
