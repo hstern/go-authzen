@@ -40,18 +40,22 @@ func (d *staticDecider) Evaluate(context.Context, *authzen.EvaluationRequest) (*
 	d.calls++
 	return d.evalResp, d.evalErr
 }
+
 func (d *staticDecider) Evaluations(context.Context, *authzen.EvaluationsRequest) (*authzen.EvaluationsResponse, error) {
 	d.calls++
 	return d.evalsResp, d.evalsErr
 }
+
 func (d *staticDecider) SearchSubject(context.Context, *authzen.SubjectSearchRequest) (*authzen.SubjectSearchResponse, error) {
 	d.calls++
 	return d.searchSubR, d.searchSubErr
 }
+
 func (d *staticDecider) SearchResource(context.Context, *authzen.ResourceSearchRequest) (*authzen.ResourceSearchResponse, error) {
 	d.calls++
 	return d.searchResR, d.searchResErr
 }
+
 func (d *staticDecider) SearchAction(context.Context, *authzen.ActionSearchRequest) (*authzen.ActionSearchResponse, error) {
 	d.calls++
 	return d.searchActR, d.searchActErr

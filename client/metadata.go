@@ -72,7 +72,7 @@ func (c *Client) FetchMetadata(ctx context.Context) (*authzen.Metadata, error) {
 // of the cache so concurrent callers can each fetch without
 // holding the cache mutex across IO.
 func (c *Client) fetchMetadataRaw(ctx context.Context) (*authzen.Metadata, time.Duration, error) {
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpointURL(authzen.MetadataPath), nil)
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpointURL(authzen.MetadataPath), http.NoBody)
 	if err != nil {
 		return nil, 0, fmt.Errorf("authzen client: build metadata request: %w", err)
 	}
