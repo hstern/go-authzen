@@ -1,8 +1,8 @@
 # Strict lint configuration. Single source of truth for which linters run
 # in the `lint` CI job (and locally via `golangci-lint run ./...`).
 #
-# Schema: golangci-lint v2 (pinned in the Dockerfile at
-# GOLANGCI_VERSION=2.12.1). In v2, `gosimple` is folded into `staticcheck`
+# Schema: golangci-lint v2 (pinned in the CI workflow at
+# v2.12.1). In v2, `gosimple` is folded into `staticcheck`
 # and is no longer a standalone linter — its checks live under the
 # `staticcheck` umbrella (the `S` category). Formatters (`gofumpt`)
 # live in the top-level `formatters:` block, not `linters:`.

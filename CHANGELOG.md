@@ -48,8 +48,9 @@ authorization decisions.
   `Decide` rule, a curated `Cases` table, and an in-memory `Decider`.
   `//go:build interop`-tagged tests drive the library in both PEP and
   PDP roles against Topaz at `topaz-todo-proxy.authzen-interop.net`.
-- **CI fan-out**: `build`, `static`, `test`, `lint`, `interop` jobs.
-  Branch protection on `main` enforces all five.
+- **CI fan-out** on GitHub Actions: `static`, `test`, `lint`,
+  `interop` jobs, plus a separate daily `vuln` workflow running
+  `govulncheck` against `main`.
 - **Documentation**: `README.md` with PEP + PDP quickstart, a
   typed-extensions example, and a Metadata-document section.
   `DESIGN.md` capturing the eight design decisions. `AGENTS.md` for
